@@ -81,7 +81,7 @@ export const editNote = async(req, res)=>{
         });
 
         if(!note){
-            return res.status(400).json({
+            return res.status(404).json({
                 message: "Not not found"
             })
         }
@@ -125,7 +125,7 @@ export const deleteNote = async(req, res)=>{
         })
 
         if(note.deletedCount === 0){
-            return res.status(400).json({
+            return res.status(404).json({
                 message: "Note not found"
             })
         }
