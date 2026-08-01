@@ -27,12 +27,26 @@ export const register = async(req, res)=>{
         password : hashedPassword
     })
 
-    const token = jwt.sign({
+    const accessToken = jwt.sign({
         id: user._id,
     }, process.env.JWT_SECRET,{
-        expiresIn: "1h"
+        expiresIn: "15m"
     } 
     )
+    
+    const refreshToken = jwt.sign({
+        id: user._id,
+    }, process.env.JWT_SECRET,{
+        expiresIn: "7d"
+    } 
+    )
+
+    res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000 //7 days
+    })
 
     res.status(201).json({
         message: "User created successfully",
@@ -40,7 +54,9 @@ export const register = async(req, res)=>{
             username:user.username,
             email:user.email
         },
-        token
+        token: {
+            accessToken
+        }
     })
 }
 
@@ -58,6 +74,12 @@ export const getMe= async(req, res)=>{
 
     const user = await userModel.findById(decoded.id)
 
+    if(!user){
+        res.status(404).json({
+            message: "User not found"
+        });
+    }
+
     res.status(200).json({
         message:"user fetched successfully",
         user: {
@@ -67,4 +89,46 @@ export const getMe= async(req, res)=>{
     }
     )
 }
+
+export const refreshToken = async(req, res)=>{
+
+    const refreshToken = req.cookies.refreshToken;
+        if(!refreshToken){
+            return res.status(401).json({
+                message: "Unauthorized"
+            })
+        }
+
+        const decoded = jwt.verify(
+            refreshToken, process.env.JWT_SECRET
+        );
+
+        const accessToken = jwt.sign({
+            id: decoded.id,
+        }, process.env.JWT_SECRET,{
+            expiresIn: "15m"
+        });
+
+        const newRefreshToken = jwt.sign({
+            id: decoded.id,
+        }, process.env.JWT_SECRET,{
+            expiresIn: "7d"
+        } 
+        );
+
+        res.cookie("refreshToken", newRefreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+            maxAge: 7 * 24 * 60 * 60 * 1000 //7 days
+        });
+
+        res.status(200).json({
+            message: "Access token refreshed successfully",
+            accessToken
+        });
+}
+
+
+
 
