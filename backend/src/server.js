@@ -20,7 +20,7 @@ app.get('/', (req, res)=>{
     res.send("working");
 });
 
-app.use("/api/auth", authRouter);
+app.use("/auth", authRouter);
 
 const PORT = process.env.PORT || 3000;
 connectDB()

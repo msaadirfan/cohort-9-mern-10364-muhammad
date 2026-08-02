@@ -15,7 +15,7 @@ export const register = async(req, res)=>{
     ]})
 
     if(isAlreadyRegistered){
-        res.status(409).json({
+        return res.status(409).json({
             message: "Username or Email already exists"
         })
     }
@@ -73,20 +73,12 @@ export const register = async(req, res)=>{
 
 export const getMe= async(req, res)=>{
 
-    const token = req.headers.authorization?.split(" ")[1];
+    const userId = req.user.id;
 
-    if(!token){
-        return res.status(401).json({
-            message: "Unauthorized"
-        })
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    const user = await userModel.findById(decoded.id)
+    const user = await userModel.findById(userId)
 
     if(!user){
-        res.status(404).json({
+        return res.status(404).json({
             message: "User not found"
         });
     }
@@ -129,6 +121,7 @@ export const refreshToken = async(req, res)=>{
 
         const accessToken = jwt.sign({
             id: decoded.id,
+            sessionId: session._id
         }, process.env.JWT_SECRET,{
             expiresIn: "15m"
         });
