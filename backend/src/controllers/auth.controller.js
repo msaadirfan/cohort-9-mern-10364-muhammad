@@ -243,6 +243,37 @@ export const logout = async(req, res)=>{
     }
 }
 
+export const logout = async(req, res)=>{
+
+    const refreshToken = req.cookies.refreshToken;
+
+    if(!refreshToken){
+        return res.status(401).json({
+            message: "Unauthorized"
+        })
+    }
+
+    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+
+    const session = await sessionModel.findOne({
+        refreshTokenHash: crypto.createHash("sha256").update(refreshToken).digest("hex"),
+        revoked: false
+    });
+
+    if(!session){
+        return res.status(401).json({
+            message: "Invalid refresh token"
+        })
+    }
+
+    session.revoked = true;
+    await session.save();
+
+    res.clearCookie("refreshToken");
+    res.status(200).json({
+        message: "Logged out successfully"
+    });
+}
 
 export const logoutAll = async(req, res) =>{
 
