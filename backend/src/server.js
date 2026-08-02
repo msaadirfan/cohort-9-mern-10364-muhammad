@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import morgan from 'morgan'
 import authRouter from './routes/auth.routes.js';
+import notesRouter from './routes/notes.routes.js';
 import cookieParser from 'cookie-parser';
 
 
@@ -20,7 +21,7 @@ app.get('/', (req, res)=>{
     res.send("working");
 });
 
-app.use("/auth", authRouter);
+app.use("/api/auth", authRouter);
 
 const PORT = process.env.PORT || 3000;
 connectDB()
