@@ -6,7 +6,7 @@ const auth = async(req, res, next)=>{
     const accessToken = req.headers.authorization?.split(" ")[1];
 
     if(!accessToken){
-        return res.status(400).json({
+        return res.status(401).json({
             message: "Access token not found"
         })
     }
@@ -36,9 +36,9 @@ const auth = async(req, res, next)=>{
     next();
 }
     catch(err){
-        return res.status(400).json({
+        return res.status(401).json({
             message: "Invalid Access Token",
-            error: err
+            error: err.message
         })
     }
 }

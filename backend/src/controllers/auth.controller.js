@@ -1,12 +1,36 @@
 import userModel from '../models/user.model.js';
 import sessionModel from '../models/session.model.js';
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import validator from 'validator';
 
 
 export const register = async(req, res)=>{
 
+    try{
+
     const {username, email, password} = req.body;
+
+    if(username === undefined){
+        throw new Error("Invalid username");
+    }
+
+    if(email === undefined){
+        throw new Error("Invalid email");
+    }
+
+    if(!validator.isEmail(email)){
+        throw new Error("Invalid email");
+    }
+
+    if(password === undefined){
+        throw new Error("Invalid password");
+    }
+
+    if(password.length<8){
+        throw new Error("Password must be 8 or more characters");
+    }
 
     const isAlreadyRegistered = await userModel.findOne({
         $or: [
@@ -15,12 +39,12 @@ export const register = async(req, res)=>{
     ]})
 
     if(isAlreadyRegistered){
-        return res.status(409).json({
+        return res.status(401).json({
             message: "Username or Email already exists"
         })
     }
 
-    const hashedPassword = crypto.createHash("sha256").update(password).digest("hex");
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await userModel.create({
         username,
@@ -71,7 +95,17 @@ export const register = async(req, res)=>{
     })
 }
 
+    catch(err){
+        return res.status(401).message({
+            message: "Invalid request",
+            error: err.message
+        })
+    }
+}
+
 export const getMe= async(req, res)=>{
+
+    try{
 
     const userId = req.user.id;
 
@@ -92,9 +126,17 @@ export const getMe= async(req, res)=>{
     }
     )
 }
+    catch(err){
+        res.status(401).json({
+            message: "Invalid request",
+            error: err.message
+        })
+    }
+}
 
 export const refreshToken = async(req, res)=>{
 
+    try{
     const refreshToken = req.cookies.refreshToken;
         if(!refreshToken){
             return res.status(401).json({
@@ -151,10 +193,19 @@ export const refreshToken = async(req, res)=>{
             message: "Access token refreshed successfully",
             accessToken
         });
+    }
+
+    catch(err){
+        res.status(401).json({
+            message: "Invalid request",
+            error: err.message
+        })
+    }
 }
 
 export const logout = async(req, res)=>{
 
+    try{
     const refreshToken = req.cookies.refreshToken;
 
     if(!refreshToken){
@@ -184,9 +235,18 @@ export const logout = async(req, res)=>{
         message: "Logged out successfully"
     });
 }
+    catch(err){
+        res.status(401).json({
+            message: "Invalid request",
+            error: err.message
+        })
+    }
+}
 
 
 export const logoutAll = async(req, res) =>{
+
+    try{
 
     const refreshToken = req.cookies.refreshToken;
 
@@ -216,24 +276,35 @@ export const logoutAll = async(req, res) =>{
         message: "Logged out of all devices successfully"
     })
 }
+    catch(err){
+        res.status(401).json({
+            message: "Invalid request",
+            error: err.message
+        })
+    }
+}
 
 export const login = async(req, res)=>{
+
+    try{
     const {email, password}=req.body;
     
-    const hashedPassword = crypto.createHash("sha256").update(password).digest("hex");
-
     const user = await userModel.findOne({
-       email: email,
-       password:hashedPassword
-        
+       email: email
     });
-
+    
+    
     if(!user){
         return res.status(400).json({
             message: "Invalid credentials"
         })
     }
+    
+    const isMatch = await bcrypt.compare(password, user.password);
 
+    if(!isMatch){
+        throw new Error("Invalid credentials");
+    }
     
     const refreshToken = jwt.sign({
         id: user._id,
@@ -269,5 +340,12 @@ export const login = async(req, res)=>{
         username: user.username,
         accessToken
     })
+}
+    catch(err){
+        res.status(401).json({
+            message: "Invalid request",
+            error: err.message
+        })
+    }
 }
 
