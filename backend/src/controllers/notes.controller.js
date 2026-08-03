@@ -5,7 +5,7 @@ export const createNote = async(req, res)=>{
 try{
     const {title, description} = req.body;
 
-    await noteModel.create({
+    const note = await noteModel.create({
         user: req.user.id,
         title: title,
         description: description
@@ -19,7 +19,8 @@ try{
 
 catch(err){
     res.status(400).json({
-        message: "Invalid Request"
+        message: "Invalid Request",
+        error: err.message
     })
 }   
 }
@@ -38,7 +39,7 @@ export const getNotes = async(req, res)=>{
 catch(err){
     res.status(400).json({
         message: "Invalid request",
-        error: err
+        error: err.message
     })
 }
 }
@@ -66,7 +67,7 @@ export const getNoteById = async(req, res)=>{
     catch(err){
         res.status(400).json({
             message: "Invalid request",
-            error: err
+            error: err.message
         })
     }
 }
@@ -108,7 +109,7 @@ export const editNote = async(req, res)=>{
     catch(err){
         res.status(400).json({
             message: "Invalid request",
-            error: err
+            error: err.message
         })
     }
 
@@ -136,7 +137,7 @@ export const deleteNote = async(req, res)=>{
     catch(err){
         return res.status(400).json({
             message: "Invalid request",
-            error: err
+            error: err.message
         })
     }
 }
