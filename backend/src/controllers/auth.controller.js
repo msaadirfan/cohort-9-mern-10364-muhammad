@@ -39,7 +39,7 @@ export const register = async(req, res)=>{
     ]})
 
     if(isAlreadyRegistered){
-        return res.status(401).json({
+        return res.status(409).json({
             message: "Username or Email already exists"
         })
     }
@@ -96,7 +96,7 @@ export const register = async(req, res)=>{
 }
 
     catch(err){
-        return res.status(401).message({
+        return res.status(401).json({
             message: "Invalid request",
             error: err.message
         })
