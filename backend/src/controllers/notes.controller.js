@@ -1,9 +1,21 @@
 import noteModel from "../models/note.model.js";
-
+import mongoose from 'mongoose';
 
 export const createNote = async(req, res)=>{
 try{
     const {title, description} = req.body;
+
+    if (typeof title !== "string" || title.trim().length === 0){
+        return res.status(400).json({
+          message: "Invalid title."
+        });
+    }
+
+    if (typeof description !== "string" || description.trim().length === 0){
+        return res.status(400).json({
+          message: "Invalid content."
+        });
+    }
 
     const note = await noteModel.create({
         user: req.user.id,
@@ -48,6 +60,12 @@ export const getNoteById = async(req, res)=>{
     try{
     const noteId = req.params.id;
 
+    if (!mongoose.Types.ObjectId.isValid(noteId)){
+        return res.status(400).json({
+            message: "Invalid note ID."
+        });
+    }
+
     const note = await noteModel.findOne({
         _id: noteId,
         user: req.user.id
@@ -75,6 +93,11 @@ export const getNoteById = async(req, res)=>{
 export const editNote = async(req, res)=>{
     try{
         const noteId = req.params.id;
+        if (!mongoose.Types.ObjectId.isValid(noteId)){
+        return res.status(400).json({
+           message: "Invalid note ID."
+        });
+    }
         const note = await noteModel.findOne({
             _id: noteId,
             user: req.user.id
@@ -85,16 +108,30 @@ export const editNote = async(req, res)=>{
                 message: "Not not found"
             })
         }
-        
+
         const {title, description} = req.body;
-
+        if(!description && !title){
+        return res.status(400).json({
+            message: "Bad request"
+        })
+    }
+        
         if(title !== undefined){
-            note.title = title;
+        if(typeof title !== "string" || title.trim().length === 0){
+            return res.status(400).json({
+                message: "Invalid title."
+            });
         }
-
+        note.title = title;
+    }
         if(description !== undefined){
-            note.description = description;
+        if(typeof description !== "string" || description.trim().length === 0){
+            return res.status(400).json({
+                message: "Invalid content."
+            });
         }
+        note.description = description;
+    }
 
         await note.save();
         res.status(200).json({
@@ -118,6 +155,11 @@ export const editNote = async(req, res)=>{
 export const deleteNote = async(req, res)=>{
     try{
         const noteId = req.params.id;
+        if(!mongoose.Types.ObjectId.isValid(noteId)){
+        return res.status(400).json({
+            message: "Invalid note ID."
+        });
+    }
 
         const note = await noteModel.deleteOne({
             _id: noteId,
