@@ -12,26 +12,6 @@ export const register = async(req, res)=>{
 
     const {username, email, password} = req.body;
 
-    if(username === undefined){
-        throw new Error("Invalid username");
-    }
-
-    if(email === undefined){
-        throw new Error("Invalid email");
-    }
-
-    if(!validator.isEmail(email)){
-        throw new Error("Invalid email");
-    }
-
-    if(password === undefined){
-        throw new Error("Invalid password");
-    }
-
-    if(password.length<8){
-        throw new Error("Password must be 8 or more characters");
-    }
-
     const isAlreadyRegistered = await userModel.findOne({
         $or: [
             {username},

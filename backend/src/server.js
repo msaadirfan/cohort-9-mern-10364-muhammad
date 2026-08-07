@@ -5,7 +5,7 @@ import morgan from 'morgan'
 import authRouter from './routes/auth.routes.js';
 import notesRouter from './routes/notes.routes.js';
 import cookieParser from 'cookie-parser';
-
+import errorMiddleware from './middleware/error.middleware.js';
 
 dotenv.config();
 
@@ -17,12 +17,14 @@ app.use(express.json());
 
 app.use(cookieParser());
 
+
 app.get('/', (req, res)=>{
     res.send("working");
 });
 
 app.use("/auth", authRouter);
 app.use("/notes", notesRouter);
+app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 3000;
 connectDB()
