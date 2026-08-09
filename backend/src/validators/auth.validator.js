@@ -5,6 +5,13 @@ import logger from '../utils/logger.js';
 export const validateLogin = (req, res, next) => {
     const {email, password} = req.body;
 
+    if(typeof email !== "string"){
+       logger.error("Invalid email");
+       return next(
+           new ApiError(400, "Invalid email")
+        ); 
+    }
+
     if(!validator.isEmail(email)){
        logger.error("Invalid email");
        return next(
@@ -35,6 +42,13 @@ export const validateLogin = (req, res, next) => {
 
 export const validateRegister = (req, res, next) =>{
     const {username, email, password} = req.body;
+
+    if(typeof email !== "string"){
+        logger.error("Invalid email");
+        return next(
+            new ApiError(400, "Invalid email")
+        );
+    }
     
     if(!validator.isEmail(email)){
         logger.error("Invalid email");
