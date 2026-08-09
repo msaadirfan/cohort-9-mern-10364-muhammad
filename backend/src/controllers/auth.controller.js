@@ -19,10 +19,7 @@ export const register = async(req, res)=>{
     ]})
 
     if(isAlreadyRegistered){
-        logger.info({
-            username: username,
-            email: email
-        }, "Username or Email already exists")
+        logger.info("Username or Email already exists")
         return res.status(409).json({
             message: "Username or Email already exists"
         })
@@ -65,10 +62,7 @@ export const register = async(req, res)=>{
         maxAge: 7 * 24 * 60 * 60 * 1000 //7 days
     })
 
-    logger.info({
-        username: user.username,
-        email: user.email
-    }, "User created successfully");
+    logger.info("User created successfully");
     res.status(201).json({
         message: "User created successfully",
         user: {
@@ -105,10 +99,7 @@ export const getMe= async(req, res)=>{
         });
     }
 
-    logger.info({
-        username: user.username,
-        email: user.email
-    }, "User fetched successfully");
+    logger.info("User fetched successfully");
     res.status(200).json({
         message:"user fetched successfully",
         user: {
@@ -342,9 +333,7 @@ export const login = async(req, res)=>{
         maxAge: 7 * 24 * 60 * 60 * 1000 //7 days
     })
 
-    logger.info({
-        username: user.username
-    }, "Logged in successfully");
+    logger.info("Logged in successfully");
     res.status(200).json({
         message: "Logged in successfully",
         username: user.username,

@@ -2,7 +2,7 @@ import validator from 'validator';
 import ApiError from '../utils/api.error.js';
 import logger from '../utils/logger.js';
 
-export const validateLogin = async(req, res, next) => {
+export const validateLogin = (req, res, next) => {
     const {email, password} = req.body;
 
     if(!validator.isEmail(email)){
@@ -33,7 +33,7 @@ export const validateLogin = async(req, res, next) => {
     next();
 }
 
-export const validateRegister = async(req, res, next) =>{
+export const validateRegister = (req, res, next) =>{
     const {username, email, password} = req.body;
     
     if(!validator.isEmail(email)){

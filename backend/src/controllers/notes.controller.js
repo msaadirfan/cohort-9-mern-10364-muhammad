@@ -16,10 +16,7 @@ try{
         message: "Note created",
         note
     })
-    logger.info({
-        title: title,
-        description: description
-    }, "Note created");
+    logger.info("Note created");
 }
 
 catch(err){
@@ -117,10 +114,7 @@ export const editNote = async(req, res)=>{
             }
         })
 
-        logger.info({
-            title: note.title,
-            description: note.description
-        }, "Note updated successfully");
+        logger.info("Note updated successfully");
     }
 
     catch(err){
