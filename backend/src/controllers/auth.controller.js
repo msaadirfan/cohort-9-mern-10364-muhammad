@@ -4,33 +4,13 @@ import crypto from 'node:crypto';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import validator from 'validator';
-
+import logger from '../utils/logger.js';
 
 export const register = async(req, res)=>{
 
     try{
 
     const {username, email, password} = req.body;
-
-    if(username === undefined){
-        throw new Error("Invalid username");
-    }
-
-    if(email === undefined){
-        throw new Error("Invalid email");
-    }
-
-    if(!validator.isEmail(email)){
-        throw new Error("Invalid email");
-    }
-
-    if(password === undefined){
-        throw new Error("Invalid password");
-    }
-
-    if(password.length<8){
-        throw new Error("Password must be 8 or more characters");
-    }
 
     const isAlreadyRegistered = await userModel.findOne({
         $or: [
@@ -39,6 +19,7 @@ export const register = async(req, res)=>{
     ]})
 
     if(isAlreadyRegistered){
+        logger.info("Username or Email already exists")
         return res.status(409).json({
             message: "Username or Email already exists"
         })
@@ -51,8 +32,6 @@ export const register = async(req, res)=>{
         email,
         password : hashedPassword
     })
-
-    
     
     const refreshToken = jwt.sign({
         id: user._id,
@@ -83,6 +62,7 @@ export const register = async(req, res)=>{
         maxAge: 7 * 24 * 60 * 60 * 1000 //7 days
     })
 
+    logger.info("User created successfully");
     res.status(201).json({
         message: "User created successfully",
         user: {
@@ -96,6 +76,7 @@ export const register = async(req, res)=>{
 }
 
     catch(err){
+        logger.error(err.message, "Invalid request");
         return res.status(401).json({
             message: "Invalid request",
             error: err.message
@@ -112,11 +93,13 @@ export const getMe= async(req, res)=>{
     const user = await userModel.findById(userId)
 
     if(!user){
+        logger.error("User not found");
         return res.status(404).json({
             message: "User not found"
         });
     }
 
+    logger.info("User fetched successfully");
     res.status(200).json({
         message:"user fetched successfully",
         user: {
@@ -127,6 +110,7 @@ export const getMe= async(req, res)=>{
     )
 }
     catch(err){
+        logger.error(err.message, "Invalid request");
         res.status(401).json({
             message: "Invalid request",
             error: err.message
@@ -139,6 +123,7 @@ export const refreshToken = async(req, res)=>{
     try{
     const refreshToken = req.cookies.refreshToken;
         if(!refreshToken){
+            logger.error("Unauthorized");
             return res.status(401).json({
                 message: "Unauthorized"
             })
@@ -156,6 +141,7 @@ export const refreshToken = async(req, res)=>{
         });
 
         if(!session){
+            logger.error("Invalid refresh token");
             return res.status('401').json({
                 message: "Invalid refresh token"
             })
@@ -189,6 +175,7 @@ export const refreshToken = async(req, res)=>{
             maxAge: 7 * 24 * 60 * 60 * 1000 //7 days
         });
 
+        logger.info("Access token refreshed successfully");
         res.status(200).json({
             message: "Access token refreshed successfully",
             accessToken
@@ -196,6 +183,7 @@ export const refreshToken = async(req, res)=>{
     }
 
     catch(err){
+        logger.error(err.message, "Invalid request");
         res.status(401).json({
             message: "Invalid request",
             error: err.message
@@ -209,6 +197,7 @@ export const logout = async(req, res)=>{
     const refreshToken = req.cookies.refreshToken;
 
     if(!refreshToken){
+        logger.error("Unauthorized");
         return res.status(401).json({
             message: "Unauthorized"
         })
@@ -222,6 +211,7 @@ export const logout = async(req, res)=>{
     });
 
     if(!session){
+        logger.error("Invalid refresh token");
         return res.status(401).json({
             message: "Invalid refresh token"
         })
@@ -231,11 +221,13 @@ export const logout = async(req, res)=>{
     await session.save();
 
     res.clearCookie("refreshToken");
+    logger.info("Logged out successfully");
     res.status(200).json({
         message: "Logged out successfully"
     });
 }
     catch(err){
+        logger.error(err.message, "Invalid request");
         res.status(401).json({
             message: "Invalid request",
             error: err.message
@@ -251,6 +243,7 @@ export const logoutAll = async(req, res) =>{
     const refreshToken = req.cookies.refreshToken;
 
     if(!refreshToken){
+        logger.error("Unauthorized");
         return res.status(401).json({
             message: "Unauthorized"
         })
@@ -265,18 +258,21 @@ export const logoutAll = async(req, res) =>{
     });
 
     if(session.matchedCount == 0){
+        logger.info("No active sessions found");
         return res.status(400).json({
             message: "No active sessions found"
         })
     }
 
     res.clearCookie("refreshToken");
-
+    
+    logger.info("Logged out of all devices successfully");
     res.status(200).json({
         message: "Logged out of all devices successfully"
     })
 }
     catch(err){
+        logger.error(err.message, "Invalid request");
         res.status(401).json({
             message: "Invalid request",
             error: err.message
@@ -295,6 +291,7 @@ export const login = async(req, res)=>{
     
     
     if(!user){
+        logger.error("Invalid credentials");
         return res.status(400).json({
             message: "Invalid credentials"
         })
@@ -303,6 +300,7 @@ export const login = async(req, res)=>{
     const isMatch = await bcrypt.compare(password, user.password);
 
     if(!isMatch){
+        logger.error("Invalid credentials");
         throw new Error("Invalid credentials");
     }
     
@@ -335,6 +333,7 @@ export const login = async(req, res)=>{
         maxAge: 7 * 24 * 60 * 60 * 1000 //7 days
     })
 
+    logger.info("Logged in successfully");
     res.status(200).json({
         message: "Logged in successfully",
         username: user.username,
@@ -342,6 +341,7 @@ export const login = async(req, res)=>{
     })
 }
     catch(err){
+        logger.error(err.message, "Invalid request");
         res.status(401).json({
             message: "Invalid request",
             error: err.message

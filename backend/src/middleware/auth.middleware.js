@@ -1,11 +1,13 @@
 import sessionModel from "../models/session.model.js";
 import jwt from 'jsonwebtoken';
+import logger from "../utils/logger.js";
 
 const auth = async(req, res, next)=>{
     try{
     const accessToken = req.headers.authorization?.split(" ")[1];
 
     if(!accessToken){
+        logger.error("Access token not found");
         return res.status(401).json({
             message: "Access token not found"
         })
@@ -23,6 +25,7 @@ const auth = async(req, res, next)=>{
     })
 
     if(!session){
+        logger.error("Unauthorized");
         return res.status(400).json({
             message: "Unauthorized"
         })
@@ -36,6 +39,7 @@ const auth = async(req, res, next)=>{
     next();
 }
     catch(err){
+        logger.error(err.message, "Invalid Access Token");
         return res.status(401).json({
             message: "Invalid Access Token",
             error: err.message

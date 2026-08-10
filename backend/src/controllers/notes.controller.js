@@ -1,21 +1,10 @@
 import noteModel from "../models/note.model.js";
 import mongoose from 'mongoose';
+import logger from "../utils/logger.js";
 
 export const createNote = async(req, res)=>{
 try{
     const {title, description} = req.body;
-
-    if (typeof title !== "string" || title.trim().length === 0){
-        return res.status(400).json({
-          message: "Invalid title."
-        });
-    }
-
-    if (typeof description !== "string" || description.trim().length === 0){
-        return res.status(400).json({
-          message: "Invalid content."
-        });
-    }
 
     const note = await noteModel.create({
         user: req.user.id,
@@ -27,9 +16,11 @@ try{
         message: "Note created",
         note
     })
+    logger.info("Note created");
 }
 
 catch(err){
+    logger.error(err.message, "Invalid request");
     res.status(400).json({
         message: "Invalid Request",
         error: err.message
@@ -43,12 +34,14 @@ export const getNotes = async(req, res)=>{
         user: req.user.id
     })
 
+    logger.info("Notes returned successfully");
     return res.status(200).json({
         notes: notes
     })
 }
 
 catch(err){
+    logger.error(err.message, "Invalid request");
     res.status(400).json({
         message: "Invalid request",
         error: err.message
@@ -60,18 +53,13 @@ export const getNoteById = async(req, res)=>{
     try{
     const noteId = req.params.id;
 
-    if (!mongoose.Types.ObjectId.isValid(noteId)){
-        return res.status(400).json({
-            message: "Invalid note ID."
-        });
-    }
-
     const note = await noteModel.findOne({
         _id: noteId,
         user: req.user.id
     });
 
     if(!note){
+        logger.error("Note not found");
         return res.status(404).json({
             message: "Note not found"
         })
@@ -80,9 +68,11 @@ export const getNoteById = async(req, res)=>{
     res.status(200).json({
         note: note
     })
+    logger.info("Note returned successfully");
 }
 
     catch(err){
+        logger.error(err.message, "Invalid request");
         res.status(400).json({
             message: "Invalid request",
             error: err.message
@@ -93,43 +83,25 @@ export const getNoteById = async(req, res)=>{
 export const editNote = async(req, res)=>{
     try{
         const noteId = req.params.id;
-        if (!mongoose.Types.ObjectId.isValid(noteId)){
-        return res.status(400).json({
-           message: "Invalid note ID."
-        });
-    }
+        
         const note = await noteModel.findOne({
             _id: noteId,
             user: req.user.id
         });
 
         if(!note){
+            logger.error("Note not found");
             return res.status(404).json({
-                message: "Not not found"
+                message: "Note not found"
             })
         }
 
         const {title, description} = req.body;
-        if(!description && !title){
-        return res.status(400).json({
-            message: "Bad request"
-        })
-    }
         
         if(title !== undefined){
-        if(typeof title !== "string" || title.trim().length === 0){
-            return res.status(400).json({
-                message: "Invalid title."
-            });
-        }
         note.title = title;
     }
         if(description !== undefined){
-        if(typeof description !== "string" || description.trim().length === 0){
-            return res.status(400).json({
-                message: "Invalid content."
-            });
-        }
         note.description = description;
     }
 
@@ -141,9 +113,12 @@ export const editNote = async(req, res)=>{
                 description: note.description
             }
         })
+
+        logger.info("Note updated successfully");
     }
 
     catch(err){
+        logger.error(err.message, "Invalid request");
         res.status(400).json({
             message: "Invalid request",
             error: err.message
@@ -155,11 +130,6 @@ export const editNote = async(req, res)=>{
 export const deleteNote = async(req, res)=>{
     try{
         const noteId = req.params.id;
-        if(!mongoose.Types.ObjectId.isValid(noteId)){
-        return res.status(400).json({
-            message: "Invalid note ID."
-        });
-    }
 
         const note = await noteModel.deleteOne({
             _id: noteId,
@@ -167,6 +137,7 @@ export const deleteNote = async(req, res)=>{
         })
 
         if(note.deletedCount === 0){
+            logger.error("Note not found");
             return res.status(404).json({
                 message: "Note not found"
             })
@@ -174,14 +145,13 @@ export const deleteNote = async(req, res)=>{
         res.status(200).json({
             message: "Note deleted successfully"
         })
-
+        logger.info("Note deleted successfully");
     }
     catch(err){
+        logger.error(err.message, "Invalid request");
         return res.status(400).json({
             message: "Invalid request",
             error: err.message
         })
     }
 }
-
-
