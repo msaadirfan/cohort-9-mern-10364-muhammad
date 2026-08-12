@@ -292,7 +292,7 @@ export const login = async(req, res)=>{
     
     if(!user){
         logger.error("Invalid credentials");
-        return res.status(400).json({
+        return res.status(401).json({
             message: "Invalid credentials"
         })
     }
@@ -301,7 +301,9 @@ export const login = async(req, res)=>{
 
     if(!isMatch){
         logger.error("Invalid credentials");
-        throw new Error("Invalid credentials");
+        return res.status(401).json({
+            message: "Invalid credentials"
+        });
     }
     
     const refreshToken = jwt.sign({

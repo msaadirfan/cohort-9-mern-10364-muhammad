@@ -39,3 +39,5 @@ connectDB()
         logger.error(err.message, "Database connection failed:");
         process.exit(1);
     });
+
+export default app;
