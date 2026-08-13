@@ -2,13 +2,14 @@ import request from 'supertest';
 import {expect} from 'chai';
 import app from '../src/server.js';
 
+
 describe("Login API", ()=>{
     it("should login a user", async()=>{
         const response = await request(app)
         .post("/auth/login")
         .send({
-            email: "msaadirfan04@gmail.com",
-            password: "Saadpmc9."
+            email: process.env.TEST_USER_EMAIL,
+            password: process.env.TEST_USER_PASSWORD
         });
         expect(response.status).to.equal(200);
         expect(response.body).to.have.property("accessToken");
@@ -19,8 +20,20 @@ describe("Login API", ()=>{
         const response = await request(app)
         .post("/auth/login")
         .send({
-            email: "msaadirfan04@gmail.com",
-            password: "Saadpmc9"
+            email: process.env.TEST_USER_EMAIL,
+            password: "jlklkdasjlk"
+        });
+
+        expect(response.status).to.equal(401);
+        expect(response.body.message).to.equal("Invalid credentials");
+    });
+
+    it("should not login a user", async()=>{
+        const response = await request(app)
+        .post("/auth/login")
+        .send({
+            email: "emailnotindb@gmail.com",
+            password: "1ndksanjkda"
         });
 
         expect(response.status).to.equal(401);
@@ -35,9 +48,9 @@ describe("Register API", ()=>{
         const response = await request(app)
         .post("/auth/register")
         .send({
-            username: "mochamocha",
-            email: "mocha@gmail.com",
-            password: "mochamocha"
+        username: `testuser${Date.now()}`,
+        email: `testuser${Date.now()}@example.com`,
+        password: "TestPassword123!"
         });
         expect(response.status).to.equal(201);
         expect(response.body.message).to.equal("User created successfully");
@@ -48,9 +61,9 @@ describe("Register API", ()=>{
         const response = await request(app)
         .post("/auth/register")
         .send({
-            username: "msaadirfan",
-            email: "msaadirfan04@gmail.com",
-            password: "Saadpmc9."
+            username: process.env.TEST_USER_USERNAME,
+            email: process.env.TEST_USER_EMAIL,
+            password: process.env.TEST_USER_PASSWORD
         });
         expect(response.status).to.equal(409);
         expect(response.body.message).to.equal("Username or Email already exists");
@@ -64,8 +77,8 @@ describe("Logout API", ()=>{
         const loginResponse = await request(app)
         .post("/auth/login")
         .send({
-            email: "msaadirfan04@gmail.com",
-            password: "Saadpmc9."
+            email: process.env.TEST_USER_EMAIL,
+            password: process.env.TEST_USER_PASSWORD
         });
 
         expect(loginResponse.status).to.equal(200);
@@ -84,8 +97,8 @@ describe("LogoutAll API", ()=>{
         const loginResponse = await request(app)
         .post("/auth/login")
         .send({
-            email: "msaadirfan04@gmail.com",
-            password: "Saadpmc9."
+            email: process.env.TEST_USER_EMAIL,
+            password: process.env.TEST_USER_PASSWORD
         });
 
         expect(loginResponse.status).to.equal(200);

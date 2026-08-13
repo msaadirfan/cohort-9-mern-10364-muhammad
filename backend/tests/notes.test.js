@@ -2,13 +2,14 @@ import app from "../src/server.js";
 import {expect} from 'chai';
 import request from 'supertest';
 
+
 describe("Create Note API", ()=>{
     it("should create a note", async()=>{
         const loginResponse = await request(app)
         .post("/auth/login")
         .send({
-            email: "msaadirfan04@gmail.com",
-            password: "Saadpmc9."
+             email: process.env.TEST_USER_EMAIL,
+            password: process.env.TEST_USER_PASSWORD
         });
 
         expect(loginResponse.status).to.equal(200);
@@ -34,8 +35,8 @@ describe("Update Note API", ()=>{
         const loginResponse = await request(app)
         .post("/auth/login")
         .send({
-            email: "msaadirfan04@gmail.com",
-            password: "Saadpmc9."
+            email: process.env.TEST_USER_EMAIL,
+            password: process.env.TEST_USER_PASSWORD
         });
 
         expect(loginResponse.status).to.equal(200);
@@ -43,7 +44,7 @@ describe("Update Note API", ()=>{
         const accessToken = loginResponse.body.accessToken;
 
         const UpdateNoteResponse = await request(app)
-        .patch("/notes/6a7af99c4123dc00675e66c7")
+        .patch("/notes/6a7d6153beb9057a184657c6")
         .set("Authorization", `Bearer ${accessToken}`)
         .send({
             title: "Updated notes update"
@@ -59,8 +60,8 @@ describe("Get Notes API", ()=>{
         const loginResponse = await request(app)
         .post("/auth/login")
         .send({
-            email: "msaadirfan04@gmail.com",
-            password: "Saadpmc9."
+             email: process.env.TEST_USER_EMAIL,
+            password: process.env.TEST_USER_PASSWORD
         });
 
         expect(loginResponse.status).to.equal(200);
@@ -82,8 +83,8 @@ describe("Get Note by ID API", ()=>{
         const loginResponse = await request(app)
         .post("/auth/login")
         .send({
-            email: "msaadirfan04@gmail.com",
-            password: "Saadpmc9."
+             email: process.env.TEST_USER_EMAIL,
+            password: process.env.TEST_USER_PASSWORD
         });
 
         expect(loginResponse.status).to.equal(200);
@@ -91,7 +92,7 @@ describe("Get Note by ID API", ()=>{
         const accessToken = loginResponse.body.accessToken;
 
         const getNoteByIdResponse = await request(app)
-        .get("/notes/6a7af99c4123dc00675e66c7")
+        .get("/notes/6a7d6153beb9057a184657c6")
         .set("Authorization", `Bearer ${accessToken}`);
 
         expect(getNoteByIdResponse.status).to.equal(200);
@@ -106,8 +107,8 @@ describe("Delete a Note", ()=>{
         const loginResponse = await request(app)
         .post("/auth/login")
         .send({
-            email: "msaadirfan04@gmail.com",
-            password: "Saadpmc9."
+             email: process.env.TEST_USER_EMAIL,
+            password: process.env.TEST_USER_PASSWORD
         });
 
         expect(loginResponse.status).to.equal(200);
@@ -115,7 +116,7 @@ describe("Delete a Note", ()=>{
         const accessToken = loginResponse.body.accessToken;
 
         const getNoteByIdResponse = await request(app)
-        .delete("/notes/6a7af99c4123dc00675e66c7")
+        .delete("/notes/6a7d6153beb9057a184657c6")
         .set("Authorization", `Bearer ${accessToken}`);
 
         expect(getNoteByIdResponse.status).to.equal(200);

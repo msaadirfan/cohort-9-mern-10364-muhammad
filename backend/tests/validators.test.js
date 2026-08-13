@@ -2,13 +2,14 @@ import app from '../src/server.js';
 import {expect} from 'chai';
 import request from 'supertest';
 
+
 describe("Auth validators", ()=>{
     it("should not login a user for invalid email", async()=>{
         const response = await request(app)
         .post("/auth/login/")
         .send({
-            email: "msaadirfan04",
-            password: "Saadpmc9."
+             email: "testtest",
+            password: process.env.TEST_USER_PASSWORD
         });
 
         expect(response.status).to.equal(400);
@@ -19,9 +20,8 @@ describe("Auth validators", ()=>{
         const response = await request(app)
         .post("/auth/login/")
         .send({
-            email: "msaadirfan04@gmail.com",
-            password: ""
-        });
+             email: process.env.TEST_USER_EMAIL,
+            password: ""        });
 
         expect(response.status).to.equal(400);
         expect(response.body.message).to.equal("Password should be 8 or more characters");
@@ -32,22 +32,22 @@ describe("Auth validators", ()=>{
         .post("/auth/register/")
         .send({
             username: "",
-            email: "msaadirfan04",
-            password: "Saadpmc9."
+            email: process.env.TEST_USER_EMAIL,
+            password: process.env.TEST_USER_PASSWORD
         });
 
         expect(response.status).to.equal(400);
-        expect(response.body.message).to.equal("Invalid email");
+        expect(response.body.message).to.equal("Invalid username");
     });
 
     it("should not register a user for invalid email", async()=>{
         const response = await request(app)
         .post("/auth/register/")
         .send({
-            username: "msaadirfan",
-            email: "msaadirfan04",
-            password: "Saadpmc9."
-        });
+            username: process.env.TEST_USER_USERNAME,
+            email: "testtest",
+            password: process.env.TEST_USER_PASSWORD
+            });
 
         expect(response.status).to.equal(400);
         expect(response.body.message).to.equal("Invalid email");
@@ -57,8 +57,8 @@ describe("Auth validators", ()=>{
         const response = await request(app)
         .post("/auth/register/")
         .send({
-            username: "msaadirfan",
-            email: "msaadirfan04@gmail.com",
+            username: process.env.TEST_USER_USERNAME,
+            email: process.env.TEST_USER_EMAIL,
             password: ""
         });
 
@@ -74,8 +74,8 @@ describe("Notes validators", ()=>{
         const loginResponse = await request(app)
         .post("/auth/login")
         .send({
-            email: "msaadirfan04@gmail.com",
-            password: "Saadpmc9."
+             email: process.env.TEST_USER_EMAIL,
+            password: process.env.TEST_USER_PASSWORD
         });
 
         expect(loginResponse.status).to.equal(200);
@@ -99,8 +99,8 @@ describe("Notes validators", ()=>{
         const loginResponse = await request(app)
         .post("/auth/login")
         .send({
-            email: "msaadirfan04@gmail.com",
-            password: "Saadpmc9."
+             email: process.env.TEST_USER_EMAIL,
+            password: process.env.TEST_USER_PASSWORD
         });
 
         expect(loginResponse.status).to.equal(200);
@@ -124,8 +124,8 @@ describe("Notes validators", ()=>{
         const loginResponse = await request(app)
         .post("/auth/login")
         .send({
-            email: "msaadirfan04@gmail.com",
-            password: "Saadpmc9."
+             email: process.env.TEST_USER_EMAIL,
+            password: process.env.TEST_USER_PASSWORD
         });
 
         expect(loginResponse.status).to.equal(200);
@@ -149,8 +149,8 @@ describe("Notes validators", ()=>{
         const loginResponse = await request(app)
         .post("/auth/login")
         .send({
-            email: "msaadirfan04@gmail.com",
-            password: "Saadpmc9."
+             email: process.env.TEST_USER_EMAIL,
+            password: process.env.TEST_USER_PASSWORD
         });
 
         expect(loginResponse.status).to.equal(200);
