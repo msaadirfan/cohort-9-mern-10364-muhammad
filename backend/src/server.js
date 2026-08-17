@@ -7,6 +7,7 @@ import notesRouter from './routes/notes.routes.js';
 import cookieParser from 'cookie-parser';
 import errorMiddleware from './middleware/error.middleware.js';
 import logger from './utils/logger.js';
+import cors from 'cors';
 
 dotenv.config();
 
@@ -18,6 +19,13 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 app.use(cookieParser());
+
+app.use(
+    cors({
+        origin: "http://localhost:5173",
+        credentials: true
+    })
+);
 
 
 app.get('/', (req, res)=>{
