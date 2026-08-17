@@ -54,36 +54,48 @@ function Login() {
         <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
           <legend className="fieldset-legend">Login</legend>
 
-          <label className="label">Email</label>
+          <label htmlFor="email" className="label">
+            Email
+          </label>
 
           <input
+            id="email"
+            name="email"
             type="email"
             className="input w-full"
             placeholder="Email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
+            required
+            autoComplete="email"
           />
 
-          <label className="label">Password</label>
+          <label htmlFor="password" className="label">
+            Password
+          </label>
 
           <div className="relative">
             <input
+              id="password"
+              name="password"
               type={showPassword ? "text" : "password"}
               className="input w-full pr-12"
               placeholder="Password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
+              required
+              autoComplete="current-password"
             />
 
             <button
               type="button"
               className="btn btn-ghost btn-sm absolute right-1 top-1/2 -translate-y-1/2"
               onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-
           <button className="btn btn-neutral mt-4" type="submit">
             Login
           </button>

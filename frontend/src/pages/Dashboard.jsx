@@ -15,7 +15,6 @@ function Dashboard() {
 
   const [viewedNote, setViewedNote] = useState(null);
 
-
   useEffect(() => {
     const getNotes = async () => {
       try {
@@ -34,21 +33,18 @@ function Dashboard() {
     getNotes();
   }, []);
 
-
   const handleCreateNote = () => {
     setSelectedNote(null);
     setIsEditorOpen(true);
   };
 
-
- const handleViewNote = (note) => {
-  setViewedNote(note);
-};
+  const handleViewNote = (note) => {
+    setViewedNote(note);
+  };
 
   const handleCloseView = () => {
     setViewedNote(null);
   };
-
 
   const handleEditNote = (note) => {
     setSelectedNote(note);
@@ -57,88 +53,62 @@ function Dashboard() {
     setViewedNote(null);
   };
 
-
   const handleCloseEditor = () => {
     setIsEditorOpen(false);
     setSelectedNote(null);
   };
 
-
   const handleSave = async (noteData) => {
     try {
-
       if (selectedNote) {
         const response = await api.patch(
           `/notes/${selectedNote._id}`,
-          noteData
+          noteData,
         );
 
         const updatedNote = response.data.note;
 
         setNotes((prevNotes) =>
           prevNotes.map((note) =>
-            note._id === selectedNote._id
-              ? updatedNote
-              : note
-          )
+            note._id === selectedNote._id ? updatedNote : note,
+          ),
         );
 
         toast.success("Note updated successfully");
-
-      }
-      else {
-        const response = await api.post(
-          "/notes",
-          noteData
-        );
+      } else {
+        const response = await api.post("/notes", noteData);
 
         const newNote = response.data.note;
 
-        setNotes((prevNotes) => [
-          ...prevNotes,
-          newNote,
-        ]);
+        setNotes((prevNotes) => [...prevNotes, newNote]);
 
         toast.success("Note created successfully");
       }
 
-
       setIsEditorOpen(false);
       setSelectedNote(null);
-
     } catch (err) {
       logger.error("Error saving note", err);
 
-      toast.error(
-        selectedNote
-          ? "Error editing note"
-          : "Error creating note"
-      );
+      toast.error(selectedNote ? "Error editing note" : "Error creating note");
       throw err;
     }
   };
 
-
   const deleteNote = async (noteId) => {
-  
-  try {
-    await api.delete(`/notes/${noteId}`);
+    try {
+      await api.delete(`/notes/${noteId}`);
 
-    setNotes((prevNotes) =>
-      prevNotes.filter((note) => note._id !== noteId)
-    );
+      setNotes((prevNotes) => prevNotes.filter((note) => note._id !== noteId));
 
-    toast.success("Note deleted successfully");
+      toast.success("Note deleted successfully");
 
-    setViewedNote((prev) =>
-      prev?._id === noteId ? null : prev
-    );
-
-  } catch (err) {
-    toast.error("Error deleting note");
-    logger.error("Error deleting note", err);
-  }
-};
+      setViewedNote((prev) => (prev?._id === noteId ? null : prev));
+    } catch (err) {
+      toast.error("Error deleting note");
+      logger.error("Error deleting note", err);
+    }
+  };
   if (loading) {
     return (
       <>
@@ -151,83 +121,55 @@ function Dashboard() {
     );
   }
 
-
   return (
     <>
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-6 py-8">
-
-
         <div className="flex items-center justify-between mb-8">
-
           <div>
-            <h1 className="text-3xl font-bold">
-              My Notes
-            </h1>
+            <h1 className="text-3xl font-bold">My Notes</h1>
 
             <p className="text-base-content/60 mt-1">
               Keep track of your thoughts and ideas.
             </p>
           </div>
 
-          <button
-            className="btn btn-primary"
-            onClick={handleCreateNote}
-          >
+          <button className="btn btn-primary" onClick={handleCreateNote}>
             + New Note
           </button>
-
         </div>
 
-
         {notes.length === 0 ? (
-
           <div className="min-h-[50vh] flex flex-col items-center justify-center">
-
             <p className="text-base-content/50 text-lg">
               You don't have any notes.
             </p>
 
-            <button
-              className="btn btn-primary mt-4"
-              onClick={handleCreateNote}
-            >
+            <button className="btn btn-primary mt-4" onClick={handleCreateNote}>
               Create your first note
             </button>
-
           </div>
-
         ) : (
-
-
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-
             {notes.map((note) => (
-
               <div
                 key={note._id}
-                onClick={() => handleViewNote(note)}
                 className="
-                  card
-                  h-72
-                  bg-primary
-                  text-primary-content
-                  shadow-md
-                  hover:shadow-xl
-                  transition-shadow
-                  cursor-pointer
-                "
+    card
+    h-72
+    bg-primary
+    text-primary-content
+    shadow-md
+    hover:shadow-xl
+    transition-shadow
+  "
               >
-
                 <div className="card-body flex h-full flex-col overflow-hidden">
-
                   <h2 className="card-title shrink-0 line-clamp-1">
                     {note.title}
                   </h2>
-
                   <div className="relative flex-1 overflow-hidden">
-
                     <div
                       className="
                         prose
@@ -270,50 +212,44 @@ function Dashboard() {
                         to-transparent
                       "
                     />
-
                   </div>
-
                   <div className="card-actions justify-end mt-4 shrink-0">
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-primary"
+                      onClick={() => handleViewNote(note)}
+                    >
+                      View
+                    </button>
 
                     <button
+                      type="button"
                       className="btn btn-sm"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        handleEditNote(note);
-                      }}
+                      onClick={() => handleEditNote(note)}
                     >
                       Edit
                     </button>
 
                     <button
+                      type="button"
                       className="
-                        btn
-                        btn-sm
-                        bg-amber-600
-                        text-white
-                        hover:bg-amber-700
-                        border-amber-600
-                      "
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        deleteNote(note._id);
-                      }}
+      btn
+      btn-sm
+      bg-amber-600
+      text-white
+      hover:bg-amber-700
+      border-amber-600
+    "
+                      onClick={() => deleteNote(note._id)}
                     >
                       Delete
                     </button>
-
-                  </div>
-
+                  </div>{" "}
                 </div>
-
               </div>
-
             ))}
-
           </div>
-
         )}
-
       </main>
 
       {viewedNote && (
@@ -333,7 +269,6 @@ function Dashboard() {
           onSave={handleSave}
         />
       )}
-
     </>
   );
 }

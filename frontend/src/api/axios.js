@@ -5,6 +5,12 @@ const api = axios.create({
     withCredentials: true,
 });
 
+const refreshClient = axios.create({
+    baseURL: api.defaults.baseURL,
+    withCredentials: true,
+});
+
+
 export function setAuthToken(accessToken) {
     if (accessToken) {
         api.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
@@ -14,12 +20,12 @@ export function setAuthToken(accessToken) {
 }
 
 export async function refreshAccessToken(){
-    const response = await api.post("/auth/refresh-token");
+    const response = await refreshClient.post("/auth/refresh-token");
     return response.data.accessToken;
 }
 
 export function setupInterceptors(setAccessToken) {
-    api.interceptors.response.use(
+    return api.interceptors.response.use(
         (response) => {
             return response;
         },

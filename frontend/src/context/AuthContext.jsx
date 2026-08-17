@@ -4,6 +4,7 @@ import {
     setupInterceptors,
     refreshAccessToken
 } from "../api/axios.js";
+import api from "../api/axios.js";
 
 import logger from "../utils/logger.js";
 
@@ -40,7 +41,8 @@ export function AuthProvider({ children }) {
     }, []);
 
     useEffect(() => {
-        setupInterceptors(setAccessToken);
+        const interceptorId = setupInterceptors(setAccessToken);
+    return () => api.interceptors.response.eject(interceptorId);
     }, []);
 
     return (
