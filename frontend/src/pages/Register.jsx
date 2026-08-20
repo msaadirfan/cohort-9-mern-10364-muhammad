@@ -34,9 +34,8 @@ function Register() {
 
       toast.success("Successfully Registered");
       console.log("Successfully Registered");
-      navigate("/dashboard");
+      setAccessToken(data.token.accessToken);
 
-      setAccessToken(data.accessToken);
     } catch (err) {
       toast.error("Invalid email or password");
       console.error(err.message, "Invalid email or password");

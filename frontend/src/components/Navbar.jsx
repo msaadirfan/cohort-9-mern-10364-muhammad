@@ -43,11 +43,8 @@ function Navbar() {
   type="button"
   className="btn btn-ghost btn-circle avatar"
 >
-  <div className="w-10 rounded-full">
-    <img
-      alt="Profile"
-      src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-    />
+  <div className="w-10 rounded-full text-2xl">
+    ≡
   </div>
 </button>
 
