@@ -16,5 +16,9 @@ test("renders notes returned from the API", async () => {
 
   render(<Dashboard />);
 
-  expect(await screen.findByText("Test Note")).toBeInTheDocument();
+  try {
+    expect(await screen.findByText("Test Note")).toBeInTheDocument();
+  } catch (error) {
+    throw new Error("Failed to find the rendered note", { cause: error });
+  }
 });

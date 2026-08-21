@@ -15,9 +15,9 @@ export const register = async (req, res) => {
     });
 
     if (isAlreadyRegistered) {
-      logger.info("Username or Email already exists");
+      logger.info("Email already exists");
       return res.status(409).json({
-        message: "Username or Email already exists",
+        message: "Email already exists",
       });
     }
 

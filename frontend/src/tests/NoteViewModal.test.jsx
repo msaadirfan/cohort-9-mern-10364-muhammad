@@ -10,9 +10,13 @@ test("calls onDelete with the note's id when Delete is clicked", async () => {
     <NoteViewModal note={note} onClose={() => {}} onEdit={() => {}} onDelete={onDelete} />,
   );
 
-  await userEvent.click(screen.getByRole("button", { name: /delete/i }));
+  try {
+    await userEvent.click(screen.getByRole("button", { name: /delete/i }));
 
-  expect(onDelete).toHaveBeenCalledWith("1");
+    expect(onDelete).toHaveBeenCalledWith("1");
+  } catch (error) {
+    throw new Error("Failed to verify note deletion", { cause: error });
+  }
 });
 
 test("calls onEdit with the full note when Edit is clicked", async () => {
@@ -21,7 +25,11 @@ test("calls onEdit with the full note when Edit is clicked", async () => {
     <NoteViewModal note={note} onClose={() => {}} onEdit={onEdit} onDelete={() => {}} />,
   );
 
-  await userEvent.click(screen.getByRole("button", { name: /edit/i }));
+  try {
+    await userEvent.click(screen.getByRole("button", { name: /edit/i }));
 
-  expect(onEdit).toHaveBeenCalledWith(note);
+    expect(onEdit).toHaveBeenCalledWith(note);
+  } catch (error) {
+    throw new Error("Failed to verify note editing", { cause: error });
+  }
 });

@@ -43,7 +43,7 @@ function Navbar() {
   type="button"
   className="btn btn-ghost btn-circle avatar"
 >
-  <div className="w-10 rounded-full text-2xl">
+  <div aria-label="Open account menu" className="w-10 rounded-full text-2xl">
     ≡
   </div>
 </button>

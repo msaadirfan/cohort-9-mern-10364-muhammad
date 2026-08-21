@@ -20,6 +20,10 @@ test("shows an error toast and empty state when fetching notes fails", async () 
 
   render(<Dashboard />);
 
-  expect(await screen.findByText(/don't have any notes/i)).toBeInTheDocument();
-  expect(toast.error).toHaveBeenCalledWith("Error fetching notes");
+  try {
+    expect(await screen.findByText(/don't have any notes/i)).toBeInTheDocument();
+    expect(toast.error).toHaveBeenCalledWith("Error fetching notes");
+  } catch (error) {
+    throw new Error("Failed to verify the note-fetch error state", { cause: error });
+  }
 });

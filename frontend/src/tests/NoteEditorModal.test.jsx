@@ -29,11 +29,15 @@ test("shows validation errors and blocks save when title and content are empty",
   const onSave = jest.fn();
   render(<NoteEditor onSave={onSave} onClose={() => {}} />);
 
-  await userEvent.click(screen.getByRole("button", { name: /save note/i }));
+  try {
+    await userEvent.click(screen.getByRole("button", { name: /save note/i }));
 
-  expect(screen.getByText(/please enter a title/i)).toBeInTheDocument();
-  expect(screen.getByText(/please enter some content/i)).toBeInTheDocument();
-  expect(onSave).not.toHaveBeenCalled();
+    expect(screen.getByText(/please enter a title/i)).toBeInTheDocument();
+    expect(screen.getByText(/please enter some content/i)).toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+  } catch (error) {
+    throw new Error("Failed to verify empty note validation", { cause: error });
+  }
 });
 
 test("calls onSave with trimmed title and HTML content when valid", async () => {
@@ -42,12 +46,16 @@ test("calls onSave with trimmed title and HTML content when valid", async () => 
   const onSave = jest.fn().mockResolvedValue();
   render(<NoteEditor onSave={onSave} onClose={() => {}} />);
 
-  await userEvent.type(screen.getByPlaceholderText(/note title/i), "  My Note  ");
+  try {
+    await userEvent.type(screen.getByPlaceholderText(/note title/i), "  My Note  ");
 
-  await userEvent.click(screen.getByRole("button", { name: /save note/i }));
+    await userEvent.click(screen.getByRole("button", { name: /save note/i }));
 
-  expect(onSave).toHaveBeenCalledWith({
-    title: "My Note",
-    description: "<p></p>",
-  });
+    expect(onSave).toHaveBeenCalledWith({
+      title: "My Note",
+      description: "<p></p>",
+    });
+  } catch (error) {
+    throw new Error("Failed to verify saving a valid note", { cause: error });
+  }
 });

@@ -18,12 +18,16 @@ test("deletes a note and removes it from the list", async () => {
 
   render(<Dashboard />);
 
-  await screen.findByText("Test Note");
+  try {
+    await screen.findByText("Test Note");
 
-  await userEvent.click(screen.getByRole("button", { name: /delete/i }));
+    await userEvent.click(screen.getByRole("button", { name: /delete/i }));
 
-  expect(api.delete).toHaveBeenCalledWith("/notes/1");
-  await waitFor(() => {
-    expect(screen.queryByText("Test Note")).not.toBeInTheDocument();
-  });
+    expect(api.delete).toHaveBeenCalledWith("/notes/1");
+    await waitFor(() => {
+      expect(screen.queryByText("Test Note")).not.toBeInTheDocument();
+    });
+  } catch (error) {
+    throw new Error("Failed to delete the rendered note", { cause: error });
+  }
 });
