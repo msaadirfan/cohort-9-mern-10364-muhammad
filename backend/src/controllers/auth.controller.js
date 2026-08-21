@@ -11,7 +11,7 @@ export const register = async (req, res) => {
     const { username, email, password } = req.body;
 
     const isAlreadyRegistered = await userModel.findOne({
-      $or: [{ username }, { email }],
+      email: email,
     });
 
     if (isAlreadyRegistered) {
