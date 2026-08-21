@@ -14,6 +14,7 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (accessToken) {
@@ -25,91 +26,110 @@ function Login() {
     event.preventDefault();
 
     try {
+      setIsSubmitting(true);
+
       const { data } = await api.post("/auth/login", {
         email,
         password,
       });
 
       toast.success("Logged in Successfully");
-      console.log("Login Successful");
 
       setAccessToken(data.accessToken);
     } catch (err) {
       toast.error("Invalid email or password");
       console.log(err.message, "Invalid email or password");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center">
-      <div className="text-rotate text-5xl mb-8 duration-6000">
-        <span>
-          <span>WRITE</span>
-          <span>IMPLEMENT</span>
-          <span>PERSEVERE</span>
-        </span>
+    <div className="min-h-screen flex flex-col items-center justify-center px-4">
+      <div className="flex items-center gap-2 mb-8">
+        <span className="text-2xl font-bold">MyNotes</span>
       </div>
 
-      <form onSubmit={handleSubmit}>
-        <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-          <legend className="fieldset-legend">Login</legend>
+      <div className="w-full max-w-sm rounded-2xl border border-base-300 bg-base-100 shadow-md overflow-hidden">
+        <div className="px-6 py-5 border-b border-base-300">
+          <h1 className="text-xl font-bold">Welcome back</h1>
+          <p className="text-sm text-base-content/60 mt-1">
+            Log in to keep track of your notes.
+          </p>
+        </div>
 
-          <label htmlFor="email" className="label">
-            Email
-          </label>
-
-          <input
-            id="email"
-            name="email"
-            type="email"
-            className="input w-full"
-            placeholder="Email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            required
-            autoComplete="email"
-          />
-
-          <label htmlFor="password" className="label">
-            Password
-          </label>
-
-          <div className="relative">
+        <form onSubmit={handleSubmit} className="px-6 py-5 flex flex-col gap-4">
+          <div>
+            <label htmlFor="email" className="label">
+              <span className="label-text">Email</span>
+            </label>
             <input
-              id="password"
-              name="password"
-              type={showPassword ? "text" : "password"}
-              className="input w-full pr-12"
-              placeholder="Password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
+              id="email"
+              name="email"
+              type="email"
+              className="input input-bordered w-full"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
               required
-              autoComplete="current-password"
+              autoComplete="email"
             />
-
-            <button
-              type="button"
-              className="btn btn-ghost btn-sm absolute right-1 top-1/2 -translate-y-1/2"
-              onClick={() => setShowPassword(!showPassword)}
-              aria-label={showPassword ? "Hide password" : "Show password"}
-            >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
           </div>
-          <button className="btn btn-neutral mt-4" type="submit">
-            Login
-          </button>
-        </fieldset>
-        <p className="text-sm text-center mt-4 text-base-content/60">
-          Don't have an account?{" "}
-          <Link
-            to="/register"
-            className="text-primary font-semibold hover:underline"
+
+          <div>
+            <label htmlFor="password" className="label">
+              <span className="label-text">Password</span>
+            </label>
+            <div className="relative">
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                className="input input-bordered w-full pr-12"
+                placeholder="Password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+                autoComplete="current-password"
+              />
+
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm absolute right-1 top-1/2 -translate-y-1/2"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+          </div>
+
+          <button
+            className="btn btn-primary mt-2"
+            type="submit"
+            disabled={isSubmitting}
           >
-            Sign Up
-          </Link>
-        </p>
-      </form>
+            {isSubmitting ? (
+              <>
+                <span className="loading loading-spinner loading-sm" />
+                Logging in...
+              </>
+            ) : (
+              "Log In"
+            )}
+          </button>
+        </form>
+      </div>
+
+      <p className="text-sm text-center mt-6 text-base-content/60">
+        Don't have an account?{" "}
+        <Link
+          to="/register"
+          className="text-primary font-semibold hover:underline"
+        >
+          Sign Up
+        </Link>
+      </p>
     </div>
   );
 }

@@ -108,10 +108,7 @@ export const editNote = async(req, res)=>{
         await note.save();
         res.status(200).json({
             message: "Note updated successfully",
-            note: {
-                title: note.title,
-                description: note.description
-            }
+            note: note
         })
 
         logger.info("Note updated successfully");
