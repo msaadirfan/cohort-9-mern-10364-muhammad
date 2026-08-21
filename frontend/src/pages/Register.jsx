@@ -102,7 +102,7 @@ function Register() {
 
           <div>
             <label htmlFor="password" className="label">
-              <span className="label-text">Password with atleast 8 characters</span>
+              <span className="label-text">Password with at least 8 characters</span>
             </label>
             <div className="relative">
               <input
