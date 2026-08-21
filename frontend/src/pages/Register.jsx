@@ -37,7 +37,9 @@ function Register() {
       setAccessToken(data.token.accessToken);
 
     } catch (err) {
-      toast.error("Invalid email or password");
+      if(err.response?.status === 409){
+        toast.error("Email already exists");
+      }
       console.error(err.message, "Invalid email or password");
     }
   };

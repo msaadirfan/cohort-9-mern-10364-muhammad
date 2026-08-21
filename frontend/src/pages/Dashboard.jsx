@@ -5,6 +5,7 @@ import NoteViewModal from "../components/NoteViewModal.jsx";
 import api from "../api/axios.js";
 import logger from "../utils/logger.js";
 import toast from "react-hot-toast";
+import { mergeNote } from "../utils/mergeNote.js";
 
 function Dashboard() {
   const [notes, setNotes] = useState([]);
@@ -70,7 +71,7 @@ function Dashboard() {
 
         setNotes((prevNotes) =>
           prevNotes.map((note) =>
-            note._id === selectedNote._id ? updatedNote : note,
+            note._id === selectedNote._id ? mergeNote(note, updatedNote) : note,
           ),
         );
 

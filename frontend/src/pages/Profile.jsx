@@ -1,74 +1,128 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import api from "../api/axios.js";
+import api, { setAuthToken } from "../api/axios.js";
+import AuthContext from "../context/AuthContext.jsx";
+import logger from "../utils/logger.js";
 import toast from "react-hot-toast";
 
 function Profile() {
+  const [user, setUser] = useState(null);
+  const [numberOfNotes, setNumberOfNotes] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [loggingOut, setLoggingOut] = useState(false);
 
-    const[user, setUser] = useState(null);
-    const[numberOfNotes, setNumberOfNotes] = useState(null);
+  const { setAccessToken } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-    useEffect(()=>{
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const userRes = await api.get("/auth/me");
+        setUser(userRes.data.user);
 
+        const notesRes = await api.get("/notes");
+        setNumberOfNotes(notesRes.data.notes.length);
+      } catch (err) {
+        toast.error("Error loading Profile");
+        logger.error("Error loading profile", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-        const getUser = async()=>{
-        try{
-        const user = await api.get("/auth/me");
-        if(!user){
-            throw new Error("Error fetching data of user");
-        }
-        setUser(user.data.user);
-        const notes = await api.get("/notes");
-        if(!notes){
-            throw new Error("Error fetching notes");
-        }
-        setNumberOfNotes(notes.data.notes.length);
-        }
-        catch(err){
-            toast.error("Error loading Profile");
-            console.error(err.message);
-        }
-        }
+    getUser();
+  }, []);
 
+  const handleLogout = async () => {
+    try {
+      setLoggingOut(true);
+      await api.post("/auth/logout");
 
+      setAccessToken(null);
+      setAuthToken(null);
 
-        getUser();
-    }, []);
+      toast.success("Logged out successfully");
+      navigate("/login");
+    } catch (err) {
+      toast.error("Error logging out");
+      logger.error("Error logging out", err);
+    } finally {
+      setLoggingOut(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-[80vh] flex items-center justify-center">
+          <span className="loading loading-spinner loading-lg" />
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
       <Navbar />
 
-      <div className="overflow-hidden shadow rounded-lg border m-7">
-        <div className="px-4 py-5 sm:px-6">
-          <h3 className="text-lg leading-6 font-medium text-900">User Profile</h3>
-          <p className="mt-1 max-w-2xl text-sm text-500">
-            Info
-          </p>
+      <main className="max-w-2xl mx-auto px-6 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold">Profile</h1>
+          <p className="text-base-content/60 mt-1">Your account information.</p>
         </div>
-        <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
-          <dl className="sm:divide-y sm:divide-200">
-            <div className="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-              <dt className="text-sm font-medium text-500">Username</dt>
-              <dd className="mt-1 text-sm text-900 sm:mt-0 sm:col-span-2">
-                {user?.username}
-              </dd>
+
+        <div className="rounded-2xl border border-base-300 bg-base-100 shadow-md overflow-hidden">
+          <div className="flex items-center gap-4 px-6 py-6 border-b border-base-300">
+            <div>
+              <h2 className="text-xl font-bold">{user?.username}</h2>
+              <p className="text-sm text-base-content/60">{user?.email}</p>
             </div>
-            <div className="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-              <dt className="text-sm font-medium text-500">Email address</dt>
-              <dd className="mt-1 text-sm text-900 sm:mt-0 sm:col-span-2">
-                {user?.email}
-              </dd>
-            </div>
-            <div className="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-              <dt className="text-sm font-medium text-500">
-                Number of Active Notes
+          </div>
+
+          <dl className="divide-y divide-base-300">
+            <div className="py-4 px-6 grid grid-cols-3 gap-4">
+              <dt className="text-sm font-medium text-base-content/60">
+                Username
               </dt>
-              <dd className="mt-1 text-sm text-900 sm:mt-0 sm:col-span-2">{numberOfNotes}</dd>
+              <dd className="text-sm col-span-2">{user?.username}</dd>
+            </div>
+
+            <div className="py-4 px-6 grid grid-cols-3 gap-4">
+              <dt className="text-sm font-medium text-base-content/60">
+                Email address
+              </dt>
+              <dd className="text-sm col-span-2">{user?.email}</dd>
+            </div>
+
+            <div className="py-4 px-6 grid grid-cols-3 gap-4">
+              <dt className="text-sm font-medium text-base-content/60">
+                Active Notes
+              </dt>
+              <dd className="text-sm col-span-2">{numberOfNotes}</dd>
             </div>
           </dl>
+
+          <div className="px-6 py-4 border-t border-base-300 flex justify-end">
+            <button
+              type="button"
+              className="btn btn-sm bg-amber-600 text-white hover:bg-amber-700 border-amber-600"
+              onClick={handleLogout}
+              disabled={loggingOut}
+            >
+              {loggingOut ? (
+                <>
+                  <span className="loading loading-spinner loading-xs" />
+                  Logging out...
+                </>
+              ) : (
+                "Log Out"
+              )}
+            </button>
+          </div>
         </div>
-      </div>
+      </main>
     </>
   );
 }
