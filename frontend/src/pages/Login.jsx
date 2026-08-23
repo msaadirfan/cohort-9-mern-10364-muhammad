@@ -111,8 +111,8 @@ function Login() {
           >
             {isSubmitting ? (
               <>
-                <span className="loading loading-spinner loading-sm" />
-                Logging in...
+                <span className="loading loading-spinner loading-sm mr-2" />
+                <span>Logging in...</span>
               </>
             ) : (
               "Log In"

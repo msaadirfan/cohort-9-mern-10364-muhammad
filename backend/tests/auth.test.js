@@ -16,7 +16,7 @@ describe("Login API", ()=>{
         expect(response.body.accessToken).to.be.a("string");
     });
 
-    it("should not login a user", async()=>{
+    it("should not login a user with invalid password", async()=>{
         const response = await request(app)
         .post("/auth/login")
         .send({
@@ -28,7 +28,7 @@ describe("Login API", ()=>{
         expect(response.body.message).to.equal("Invalid credentials");
     });
 
-    it("should not login a user", async()=>{
+    it("should not login a user with invalid email", async()=>{
         const response = await request(app)
         .post("/auth/login")
         .send({
@@ -57,7 +57,7 @@ describe("Register API", ()=>{
         expect(response.body).to.have.property("token");
     });
 
-    it("should not register a user", async()=>{
+    it("should not register a user with existing email", async()=>{
         const response = await request(app)
         .post("/auth/register")
         .send({
@@ -66,7 +66,7 @@ describe("Register API", ()=>{
             password: process.env.TEST_USER_PASSWORD
         });
         expect(response.status).to.equal(409);
-        expect(response.body.message).to.equal("Username or Email already exists");
+        expect(response.body.message).to.equal("Email already exists");
     });
 
 });

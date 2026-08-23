@@ -136,7 +136,7 @@ function Dashboard() {
             </p>
           </div>
 
-          <button className="btn btn-primary" onClick={handleCreateNote}>
+          <button className="btn btn-primary" onClick={handleCreateNote} type="button">
             + New Note
           </button>
         </div>
@@ -147,7 +147,7 @@ function Dashboard() {
               You don't have any notes.
             </p>
 
-            <button className="btn btn-primary mt-4" onClick={handleCreateNote}>
+            <button className="btn btn-primary mt-4" onClick={handleCreateNote} type="button">
               Create your first note
             </button>
           </div>

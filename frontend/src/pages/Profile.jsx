@@ -113,8 +113,8 @@ function Profile() {
             >
               {loggingOut ? (
                 <>
-                  <span className="loading loading-spinner loading-xs" />
-                  Logging out...
+                  <span className="loading loading-spinner loading-xs mr-2" />
+                  <span>Logging out...</span>
                 </>
               ) : (
                 "Log Out"

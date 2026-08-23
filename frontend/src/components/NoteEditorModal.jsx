@@ -110,13 +110,23 @@ function NoteEditor({ note = null, onClose, onSave }) {
     }
   };
 
+  let saveButtonContent;
+
+  if (isSaving) {
+    saveButtonContent = "Saving...";
+  } else if (isEditMode) {
+    saveButtonContent = "Save Changes";
+  } else {
+    saveButtonContent = "Save Note";
+  }
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-      <div
+      <button
+        type="button"
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={onClose}
+        aria-label="Close editor"
       />
-
       <div
         className="
           relative
@@ -474,16 +484,10 @@ function NoteEditor({ note = null, onClose, onSave }) {
               onClick={handleSave}
               disabled={isSaving || !editor}
             >
-              {isSaving ? (
-                <>
-                  <span className="loading loading-spinner loading-sm" />
-                  Saving...
-                </>
-              ) : isEditMode ? (
-                "Save Changes"
-              ) : (
-                "Save Note"
+              {isSaving && (
+                <span className="loading loading-spinner loading-sm" />
               )}
+              {saveButtonContent}
             </button>
           </div>
         </div>

@@ -1,17 +1,16 @@
 function NoteViewModal({ note, onClose, onEdit, onDelete }) {
-    if (!note) {
+  if (!note) {
     return null;
   }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-
-
-      <div
+      <button
+        type="button"
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={onClose}
+        aria-label="Close note"
       />
-
 
       <div
         className="
@@ -30,7 +29,6 @@ function NoteViewModal({ note, onClose, onEdit, onDelete }) {
           shadow-2xl
         "
       >
-
         <div
           className="
             flex
@@ -43,9 +41,7 @@ function NoteViewModal({ note, onClose, onEdit, onDelete }) {
             py-4
           "
         >
-          <h2 className="text-2xl font-bold break-words">
-            {note.title}
-          </h2>
+          <h2 className="text-2xl font-bold break-words">{note.title}</h2>
 
           <button
             type="button"
@@ -58,7 +54,6 @@ function NoteViewModal({ note, onClose, onEdit, onDelete }) {
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-5">
-
           <div
             className="
               prose
@@ -88,7 +83,6 @@ function NoteViewModal({ note, onClose, onEdit, onDelete }) {
               __html: note.description,
             }}
           />
-
         </div>
 
         <div
@@ -104,7 +98,6 @@ function NoteViewModal({ note, onClose, onEdit, onDelete }) {
             py-4
           "
         >
-
           <button
             type="button"
             className="
@@ -127,11 +120,8 @@ function NoteViewModal({ note, onClose, onEdit, onDelete }) {
           >
             Edit
           </button>
-
         </div>
-
       </div>
-
     </div>
   );
 }
