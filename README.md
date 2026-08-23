@@ -27,7 +27,7 @@ A full-stack notes application with JWT-based authentication (access + refresh t
 
 ## Project Structure
 
-```
+```text
 cohort-9-mern-10364-muhammad/
 ├── backend/
 │   ├── src/
@@ -139,13 +139,13 @@ npm run preview   # preview the production build
 
 **Auth** (`/auth`)
 
-| Method | Route                 | Description                                    |
-|--------|------------------------|-------------------------------------------------|
-| POST   | `/auth/register`       | Create a new user                              |
-| POST   | `/auth/login`          | Log in, receive access token + refresh cookie  |
-| GET    | `/auth/me`             | Get the current user (uses refresh cookie)     |
-| POST   | `/auth/refresh-token`  | Exchange refresh cookie for a new access token |
-| POST   | `/auth/logout`         | Revoke the current session                     |
+| Method | Route                 | Description                                                              | Credentials required                                        |
+|--------|------------------------|---------------------------------------------------------------------------|---------------------------------------------------------------|
+| POST   | `/auth/register`       | Create a new user                                                        | None                                                           |
+| POST   | `/auth/login`          | Log in, receive access token + refresh cookie                            | None                                                           |
+| GET    | `/auth/me`             | Get the current user                                                     | `Authorization: Bearer <accessToken>` **and** refresh token cookie |
+| POST   | `/auth/refresh-token`  | Exchange refresh cookie for a new access token                           | Refresh token cookie                                           |
+| POST   | `/auth/logout`         | Revoke the current session                                               | Refresh token cookie                                           |
 
 **Notes** (`/notes`, all require `Authorization: Bearer <accessToken>`)
 
