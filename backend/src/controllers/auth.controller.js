@@ -3,7 +3,6 @@ import sessionModel from "../models/session.model.js";
 import crypto from "node:crypto";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import validator from "validator";
 import logger from "../utils/logger.js";
 
 export const register = async (req, res) => {
@@ -217,8 +216,7 @@ export const logout = async (req, res) => {
       });
     }
 
-    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
-
+    
     const session = await sessionModel.findOne({
       refreshTokenHash: crypto
         .createHash("sha256")

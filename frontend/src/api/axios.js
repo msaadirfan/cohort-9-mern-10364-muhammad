@@ -34,11 +34,11 @@ export function setupInterceptors(setAccessToken) {
             const originalRequest = error.config;
 
             if (error.response?.status !== 401) {
-                return Promise.reject(error);
+                throw error;
             }
 
             if (originalRequest._retry) {
-                return Promise.reject(error);
+                throw error;
             }
 
             originalRequest._retry = true;
@@ -60,7 +60,7 @@ export function setupInterceptors(setAccessToken) {
                 setAccessToken(null);
                 setAuthToken(null);
 
-                return Promise.reject(refreshError);
+                throw refreshError;
             }
         }
     );

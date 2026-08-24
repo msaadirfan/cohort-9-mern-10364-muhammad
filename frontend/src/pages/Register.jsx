@@ -40,11 +40,9 @@ function Register() {
     } catch (err) {
       if (err.response?.status === 409) {
         toast.error("Email already exists");
-      } 
-      else if(err.response?.status === 400){
+      } else if (err.response?.status === 400) {
         toast.error("Password length should be atleast 8 characters");
-      }
-      else {
+      } else {
         toast.error("Something went wrong");
       }
       console.error(err.message, "Invalid email or password");
@@ -102,7 +100,9 @@ function Register() {
 
           <div>
             <label htmlFor="password" className="label">
-              <span className="label-text">Password with at least 8 characters</span>
+              <span className="label-text">
+                Password with at least 8 characters
+              </span>
             </label>
             <div className="relative">
               <input
@@ -134,8 +134,8 @@ function Register() {
           >
             {isSubmitting ? (
               <>
-                <span className="loading loading-spinner loading-sm" />
-                Registering...
+                <span className="loading loading-spinner loading-sm mr-2" />
+                <span>Registering...</span>
               </>
             ) : (
               "Register"

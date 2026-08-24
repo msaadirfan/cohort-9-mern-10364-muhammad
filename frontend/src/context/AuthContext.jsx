@@ -1,8 +1,8 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useMemo, useEffect, useState } from "react";
 import {
-    setAuthToken,
-    setupInterceptors,
-    refreshAccessToken
+  setAuthToken,
+  setupInterceptors,
+  refreshAccessToken,
 } from "../api/axios.js";
 import api from "../api/axios.js";
 
@@ -11,51 +11,48 @@ import logger from "../utils/logger.js";
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
+  const [accessToken, setAccessToken] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    const [accessToken, setAccessToken] = useState(null);
-    const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    setAuthToken(accessToken);
+  }, [accessToken]);
 
-    useEffect(() => {
-        setAuthToken(accessToken);
-    }, [accessToken]);
+  useEffect(() => {
+    const restoreSession = async () => {
+      try {
+        const newAccessToken = await refreshAccessToken();
 
-    useEffect(() => {
+        setAccessToken(newAccessToken);
+      } catch (error) {
+        setAccessToken(null);
+        logger.error(error.message, "Error getting a new access token");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-        const restoreSession = async () => {
-            try {
-                const newAccessToken = await refreshAccessToken();
+    restoreSession();
+  }, []);
 
-                setAccessToken(newAccessToken);
+  useEffect(() => {
+    const interceptorId = setupInterceptors(setAccessToken);
 
-            } catch (error) {
-                setAccessToken(null);
-                logger.error(error.message, "Error getting a new access token");
-
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        restoreSession();
-
-    }, []);
-
-    useEffect(() => {
-        const interceptorId = setupInterceptors(setAccessToken);
     return () => api.interceptors.response.eject(interceptorId);
-    }, []);
+  }, []);
 
-    return (
-        <AuthContext.Provider
-            value={{
-                accessToken,
-                setAccessToken,
-                loading
-            }}
-        >
-            {children}
-        </AuthContext.Provider>
-    );
+  const contextValue = useMemo(
+    () => ({
+      accessToken,
+      setAccessToken,
+      loading,
+    }),
+    [accessToken, loading],
+  );
+
+  return (
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
+  );
 }
 
 export default AuthContext;

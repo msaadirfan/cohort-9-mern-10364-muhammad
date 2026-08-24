@@ -1,5 +1,4 @@
 import noteModel from "../models/note.model.js";
-import mongoose from 'mongoose';
 import logger from "../utils/logger.js";
 
 export const createNote = async(req, res)=>{
